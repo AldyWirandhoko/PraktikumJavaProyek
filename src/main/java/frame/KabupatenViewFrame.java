@@ -12,6 +12,10 @@ import java.sql.*;
 
 public class KabupatenViewFrame extends JFrame{
     public KabupatenViewFrame(){
+        tambahButton.addActionListener(e -> {
+            KabupatenInputFrame inputFrame = new KabupatenInputFrame();
+            inputFrame.setVisible(true);
+        });
         tutupButton.addActionListener(e -> {
             dispose();
         });
@@ -27,7 +31,7 @@ public class KabupatenViewFrame extends JFrame{
         cariButton.addActionListener(e -> {
             Connection c = Koneksi.getConnection();
             String keyword = "%" + cariTextField.getText() + "%";
-            String searchSQl = "SELECT * FROM kabupaten WHERE nam like ?";
+            String searchSQl = "SELECT * FROM kabupaten WHERE nama like ?";
             try {
                 PreparedStatement ps =c.prepareStatement(searchSQl);
                 ps.setString(1, keyword);
@@ -56,7 +60,7 @@ public class KabupatenViewFrame extends JFrame{
                     JOptionPane.YES_NO_CANCEL_OPTION
             );
             if(pilihan == 0){
-                TableModel tm = viewTable.getModel():
+                TableModel tm = viewTable.getModel();
                 int id = Integer.parseInt(tm.getValueAt(barisTerpilih, 0).toString());
                 Connection c = Koneksi.getConnection();
                 String deleteSQL = "DELETE FROM kabupaten WHERE id = ?";
@@ -89,6 +93,10 @@ public class KabupatenViewFrame extends JFrame{
             String header[] = {"Id", "Nama Kabupaten"};
             DefaultTableModel dtm = new DefaultTableModel(header, 0);
             viewTable.setModel(dtm);
+            viewTable.getColumnModel().getColumn(0).setWidth(32);
+            viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
+            viewTable.getColumnModel().getColumn(0).setMinWidth(32);
+            viewTable.getColumnModel().getColumn(0).setPreferredWidth(32);
             Object[] row = new Object[2];
             while (rs.next()){
                 row[0] = rs.getInt("id");
