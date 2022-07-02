@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="frame.KecamatanViewFrame">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="16" left="16" bottom="16" right="16"/>
+    <constraints>
+      <xy x="20" y="20" width="543" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="b79f0" binding="cariPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="85fd2" class="javax.swing.JLabel">
+            <constraints border-constraint="West"/>
+            <properties>
+              <text value="Cari Nama"/>
+            </properties>
+          </component>
+          <component id="4f480" class="javax.swing.JTextField" binding="cariTextField">
+            <constraints border-constraint="Center"/>
+            <properties/>
+          </component>
+          <component id="b40f7" class="javax.swing.JButton" binding="cariButton">
+            <constraints border-constraint="East"/>
+            <properties>
+              <text value="Cari"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <scrollpane id="7bd40" binding="viewScrollPane">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="45e90" class="javax.swing.JTable" binding="viewTable">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <grid id="9c890" binding="buttonPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="c5a2e" class="javax.swing.JButton" binding="tambahButton">
+            <constraints/>
+            <properties>
+              <text value="Tambah"/>
+            </properties>
+          </component>
+          <component id="4797f" class="javax.swing.JButton" binding="ubahButton">
+            <constraints/>
+            <properties>
+              <text value="Ubah"/>
+            </properties>
+          </component>
+          <component id="3a233" class="javax.swing.JButton" binding="hapusButton">
+            <constraints/>
+            <properties>
+              <text value="Hapus"/>
+            </properties>
+          </component>
+          <component id="a9e7c" class="javax.swing.JButton" binding="batalButton">
+            <constraints/>
+            <properties>
+              <text value="Batal"/>
+            </properties>
+          </component>
+          <component id="2cf8f" class="javax.swing.JButton" binding="cetakButton">
+            <constraints/>
+            <properties>
+              <text value="Cetak"/>
+            </properties>
+          </component>
+          <component id="719b4" class="javax.swing.JButton" binding="tutupButton">
+            <constraints/>
+            <properties>
+              <text value="Tutup"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>
