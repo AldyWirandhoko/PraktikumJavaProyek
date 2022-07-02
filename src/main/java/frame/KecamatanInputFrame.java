@@ -4,6 +4,7 @@ import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
 import javax.swing.*;
+import java.awt.*;
 import java.sql.*;
 
 public class KecamatanInputFrame extends JFrame{
@@ -31,6 +32,17 @@ public class KecamatanInputFrame extends JFrame{
                 kabupatenComboBox.requestFocus();
                 return;
             }
+            String klasifikasi = "";
+            if(tipeARadioButton.isSelected()){
+                klasifikasi = "Tipe A";
+            } else if (tipeBRadioButton.isSelected()){
+                klasifikasi = "Tipe B";
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Pilih klasifikasi",
+                        "Validasi Data Kosong", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
@@ -43,10 +55,12 @@ public class KecamatanInputFrame extends JFrame{
                         JOptionPane.showMessageDialog(null,
                                 "Data sama sudah ada");
                     } else {
-                        String insertSQL = "INSERT INTO kecamatan (id, nama, kabupaten_id) VALUES (NULL, ?, ?)";
+                        String insertSQL = "INSERT INTO kecamatan (id, nama, kabupaten_id, klasifikasi) " +
+                                "VALUES (NULL, ?, ?, ?)";
                         ps = c.prepareStatement(insertSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, kabupatenId);
+                        ps.setString(3, klasifikasi);
                         ps.executeUpdate();
                         dispose();
                     }
@@ -60,11 +74,13 @@ public class KecamatanInputFrame extends JFrame{
                         JOptionPane.showMessageDialog(null,
                                 "Data sama sudah ada");
                     } else {
-                        String updateSQL = "UPDATE kecamatan SET nama = ?, kabupaten_id = ? WHERE id = ?";
+                        String updateSQL = "UPDATE kecamatan SET nama = ?, kabupaten_id = ?, klasifikasi = ? " +
+                                "WHERE id = ?";
                         ps = c.prepareStatement(updateSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, kabupatenId);
-                        ps.setInt(3, id);
+                        ps.setString(3, klasifikasi);
+                        ps.setInt(4, id);
                         ps.executeUpdate();
                         dispose();
                     }
@@ -103,6 +119,14 @@ public class KecamatanInputFrame extends JFrame{
                         break;
                     }
                 }
+                String klasifikasi = rs.getString("klasifikasi");
+                if(klasifikasi != null){
+                    if(klasifikasi.equals("TIPE A")){
+                        tipeARadioButton.setSelected(true);
+                    } else if(klasifikasi.equals("TIPE B")) {
+                        tipeBRadioButton.setSelected(true);
+                    }
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -124,6 +148,9 @@ public class KecamatanInputFrame extends JFrame{
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+        klasifikasiButtonGroup = new ButtonGroup();
+        klasifikasiButtonGroup.add(tipeARadioButton);
+        klasifikasiButtonGroup.add(tipeBRadioButton);
     }
     private JPanel mainPanel;
     private JTextField idTextField;
@@ -137,4 +164,7 @@ public class KecamatanInputFrame extends JFrame{
     }
     private JButton simpanButton;
     private JComboBox kabupatenComboBox;
+    private JRadioButton tipeARadioButton;
+    private JRadioButton tipeBRadioButton;
+    private ButtonGroup klasifikasiButtonGroup;
 }
