@@ -9,37 +9,39 @@ import java.awt.event.KeyEvent;
 import java.sql.*;
 
 public class KecamatanInputFrame extends JFrame{
+    private JButton simpanButton;
+    private JComboBox kabupatenComboBox;
+    private JRadioButton tipeARadioButton;
+    private JRadioButton tipeBRadioButton;
+    private JTextField populasiTextField;
+    private JTextField luasTextField;
+    private JLabel luasLabel;
+    private JTextField emailTextField;
+    private ButtonGroup klasifikasiButtonGroup;
+    private JPanel mainPanel;
+    private JTextField idTextField;
+    private JTextField namaTextField;
+    private JPanel buttonPanel;
+    private JButton batalButton;
+
+    private int id;
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public KecamatanInputFrame(){
-        batalButton.addActionListener(e -> {
-            dispose();
-        });
         kustomisasiKomponen();
         simpanButton.addActionListener(e -> {
             String nama = namaTextField.getText();
-            if (populasiTextField.getText().equals("")){
-                populasiTextField.setText("0");
-            }
-            int populasi = Integer.parseInt(populasiTextField.getText());
-            if(populasi == 0){
+            String email = emailTextField.getText();
+            if (!email.contains("@") || !email.contains(".")){
                 JOptionPane.showMessageDialog(null,
-                        "Isi Populasi",
-                        "Validasi Data Kosong", JOptionPane.WARNING_MESSAGE);
-                populasiTextField.requestFocus();
+                        "Isi dengan email valid",
+                        "validasi Email",JOptionPane.WARNING_MESSAGE);
+                emailTextField.requestFocus();
                 return;
             }
 
-            if(luasTextField.getText().equals("")){
-                luasTextField.setText("0");
-            }
-            double luas = Float.parseFloat(luasTextField.getText());
-            if(luas == 0){
-                JOptionPane.showMessageDialog(null,
-                        "Isi Luas",
-                        "Validasi Data Kosong",JOptionPane.WARNING_MESSAGE);
-                luasTextField.requestFocus();
-                return;
-            }
             if(nama.equals("")){
                 JOptionPane.showMessageDialog(null,
                         "Isi Nama Kecamatan",
@@ -67,6 +69,33 @@ public class KecamatanInputFrame extends JFrame{
                         "Validasi Data Kosong", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            if (populasiTextField.getText().equals("")){
+                populasiTextField.setText("0");
+            }
+            int populasi = Integer.parseInt(populasiTextField.getText());
+            if(populasi == 0){
+                JOptionPane.showMessageDialog(null,
+                        "Isi Populasi",
+                        "Validasi Data Kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                populasiTextField.requestFocus();
+                return;
+            }
+
+            if(luasTextField.getText().equals("")){
+                luasTextField.setText("0");
+            }
+            double luas = Float.parseFloat(luasTextField.getText());
+            if(luas == 0){
+                JOptionPane.showMessageDialog(null,
+                        "Isi Luas",
+                        "Validasi Data Kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                luasTextField.requestFocus();
+                return;
+            }
+
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
@@ -79,15 +108,15 @@ public class KecamatanInputFrame extends JFrame{
                         JOptionPane.showMessageDialog(null,
                                 "Data sama sudah ada");
                     } else {
-                        String insertSQL = "INSERT INTO kecamatan (id, nama, kabupaten_id, klasifikasi, " +
-                                "populasi, luas) " +
-                                "VALUES (NULL, ?, ?, ?, ?, ?)";
+                        String insertSQL = "INSERT INTO kecamatan SET nama = ?, kabupaten_id = ?, " +
+                                "klasifikasi = ?, populasi = ?, luas = ?, email = ?";
                         ps = c.prepareStatement(insertSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, kabupatenId);
                         ps.setString(3, klasifikasi);
                         ps.setInt(4, populasi);
                         ps.setDouble(5, luas);
+                        ps.setString(6, email);
                         ps.executeUpdate();
                         dispose();
                     }
@@ -102,14 +131,15 @@ public class KecamatanInputFrame extends JFrame{
                                 "Data sama sudah ada");
                     } else {
                         String updateSQL = "UPDATE kecamatan SET nama = ?, kabupaten_id = ?, klasifikasi = ?, " +
-                                "populasi = ?, luas = ? WHERE id = ?";
+                                "populasi = ?, luas = ?, email = ? WHERE id = ?";
                         ps = c.prepareStatement(updateSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, kabupatenId);
                         ps.setString(3, klasifikasi);
                         ps.setInt(4, populasi);
                         ps.setDouble(5, luas);
-                        ps.setInt(6, id);
+                        ps.setString(6, email);
+                        ps.setInt(7, id);
                         ps.executeUpdate();
                         dispose();
                     }
@@ -118,6 +148,10 @@ public class KecamatanInputFrame extends JFrame{
                 throw new RuntimeException(ex);
             }
         });
+        batalButton.addActionListener(e -> {
+            dispose();
+        });
+        kustomisasiKomponen();
         init();
     }
 
@@ -132,13 +166,11 @@ public class KecamatanInputFrame extends JFrame{
     public void isiKomponen() {
         Connection c = Koneksi.getConnection();
         String findSQL = "SELECT * FROM kecamatan WHERE id = ?";
-        PreparedStatement ps = null;
+        PreparedStatement ps;
         try {
             ps = c.prepareStatement(findSQL);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            populasiTextField.setText(String.valueOf(rs.getInt("populasi")));
-            luasTextField.setText(String.valueOf(rs.getDouble("luas")));
             if (rs.next()) {
                 idTextField.setText(String.valueOf(rs.getInt("id")));
                 namaTextField.setText(rs.getString("nama"));
@@ -158,6 +190,9 @@ public class KecamatanInputFrame extends JFrame{
                         tipeBRadioButton.setSelected(true);
                     }
                 }
+                populasiTextField.setText(rs.getString("populasi"));
+                luasTextField.setText(rs.getString("luas"));
+                emailTextField.setText(rs.getString("email"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -174,7 +209,8 @@ public class KecamatanInputFrame extends JFrame{
             while (rs.next()) {
                 kabupatenComboBox.addItem(new ComboBoxItem(
                         rs.getInt("id"),
-                        rs.getString("nama")));
+                        rs.getString("nama")
+                ));
             }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -190,11 +226,11 @@ public class KecamatanInputFrame extends JFrame{
             @Override
             public void keyPressed(KeyEvent e) {
                 populasiTextField.setEditable(
-                        (e.getKeyChar() >= '0' && e.getKeyChar() <= '9') ||
+                        (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' ||
                                 e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
                                 e.getKeyCode() == KeyEvent.VK_LEFT ||
-                                e.getKeyCode() == KeyEvent.VK_RIGHT
-                        );
+                                e.getKeyCode() == KeyEvent.VK_RIGHT)
+                );
             }
         });
 
@@ -203,32 +239,14 @@ public class KecamatanInputFrame extends JFrame{
         luasTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-            luasTextField.setEditable(
-                    (e.getKeyChar() >= '0' && e.getKeyChar() <= '9') ||
-                            e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
-                            e.getKeyCode() == KeyEvent.VK_LEFT ||
-                            e.getKeyCode() == KeyEvent.VK_RIGHT ||
-                            e.getKeyCode() == KeyEvent.VK_PERIOD
-            );
+                luasTextField.setEditable(
+                        (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' ||
+                                e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
+                                e.getKeyCode() == KeyEvent.VK_LEFT ||
+                                e.getKeyCode() == KeyEvent.VK_RIGHT ||
+                                e.getKeyCode() == KeyEvent.VK_PERIOD)
+                );
             }
         });
     }
-    private JPanel mainPanel;
-    private JTextField idTextField;
-    private JTextField namaTextField;
-    private JPanel buttonPanel;
-    private JButton batalButton;
-
-    private int id;
-    public void setId(int id) {
-        this.id = id;
-    }
-    private JButton simpanButton;
-    private JComboBox kabupatenComboBox;
-    private JRadioButton tipeARadioButton;
-    private JRadioButton tipeBRadioButton;
-    private JTextField populasiTextField;
-    private JTextField luasTextField;
-    private JLabel luasLabel;
-    private ButtonGroup klasifikasiButtonGroup;
 }

@@ -14,7 +14,36 @@ import java.util.Locale;
 
 
 public class KecamatanViewFrame extends JFrame{
+    private JPanel mainPanel;
+    private JPanel cariPanel;
+    private JScrollPane viewScrollPane;
+    private JPanel buttonPanel;
+    private JTextField cariTextField;
+    private JButton cariButton;
+    private JTable viewTable;
+    private JButton tambahButton;
+    private JButton ubahButton;
+    private JButton hapusButton;
+    private JButton batalButton;
+    private JButton cetakButton;
+    private JButton tutupButton;
     public KecamatanViewFrame(){
+        ubahButton.addActionListener(e ->{
+            int barisTerpilih = viewTable.getSelectedRow();
+            if(barisTerpilih < 0){
+                JOptionPane.showMessageDialog(null,
+                        "Pilih data dulu",
+                        "Validasi pilih data",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            TableModel tm = viewTable.getModel();
+            int id = Integer.parseInt(tm.getValueAt(barisTerpilih,0 ).toString());
+            KecamatanInputFrame inputFrame = new KecamatanInputFrame();
+            inputFrame.setId(id);
+            inputFrame.isiKomponen();
+            inputFrame.setVisible(true);
+        });
         tambahButton.addActionListener(e -> {
             KecamatanInputFrame inputFrame = new KecamatanInputFrame();
             inputFrame.setVisible(true);
@@ -51,9 +80,11 @@ public class KecamatanViewFrame extends JFrame{
                 ps.setString(1, keyword);
                 ps.setString(2, keyword);
                 ResultSet rs = ps.executeQuery();
+
                 DefaultTableModel dtm =(DefaultTableModel) viewTable.getModel();
                 dtm.setRowCount(0);
                 Object[] row = new Object[6];
+
                 while (rs.next()){
                     row[0] = rs.getInt("id");
                     row[1] = rs.getString("nama");
@@ -81,6 +112,7 @@ public class KecamatanViewFrame extends JFrame{
             if(pilihan == 0){
                 TableModel tm = viewTable.getModel();
                 int id = Integer.parseInt(tm.getValueAt(barisTerpilih, 0).toString());
+
                 Connection c = Koneksi.getConnection();
                 String deleteSQL = "DELETE FROM kecamatan WHERE id = ?";
                 try {
@@ -91,21 +123,6 @@ public class KecamatanViewFrame extends JFrame{
                     throw new RuntimeException(ex);
                 }
             }
-        });
-        ubahButton.addActionListener(e ->{
-            int barisTerpilih = viewTable.getSelectedRow();
-            if(barisTerpilih < 0){
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Pilih data dulu");
-                return;
-            }
-            TableModel tm = viewTable.getModel();
-            int id = Integer.parseInt(tm.getValueAt(barisTerpilih,0 ).toString());
-            KecamatanInputFrame inputFrame = new KecamatanInputFrame();
-            inputFrame.setId(id);
-            inputFrame.isiKomponen();
-            inputFrame.setVisible(true);
         });
         isiTable();
         init();
@@ -120,14 +137,16 @@ public class KecamatanViewFrame extends JFrame{
     }
     public void isiTable(){
         Connection c = Koneksi.getConnection();
-        String selectSQL = "SELECT K.*,B.nama AS nama_kabupaten FROM kecamatan K " +
-                "LEFT JOIN kabupaten B ON K.kabupaten_id = B.id";
+        String selectSQL = "SELECT K.*,B.nama AS nama_kabupaten FROM kecamatan AS K " +
+                "LEFT JOIN kabupaten AS B ON K.kabupaten_id = B.id";
         try {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
+
             String[] header  = {"Id", "Nama Kecamatan", "Nama Kabupaten", "Klasifikasi","Populasi","Luas"};
             DefaultTableModel dtm = new DefaultTableModel(header, 0);
             viewTable.setModel(dtm);
+
             viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
             viewTable.getColumnModel().getColumn(1).setMinWidth(150);
             viewTable.getColumnModel().getColumn(2).setMaxWidth(150);
@@ -156,17 +175,4 @@ public class KecamatanViewFrame extends JFrame{
             throw new RuntimeException(e);
         }
     }
-    private JPanel mainPanel;
-    private JPanel cariPanel;
-    private JScrollPane viewScrollPane;
-    private JPanel buttonPanel;
-    private JTextField cariTextField;
-    private JButton cariButton;
-    private JTable viewTable;
-    private JButton tambahButton;
-    private JButton ubahButton;
-    private JButton hapusButton;
-    private JButton batalButton;
-    private JButton cetakButton;
-    private JButton tutupButton;
 }
